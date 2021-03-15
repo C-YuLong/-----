@@ -1,0 +1,56 @@
+import keras
+from keras import layers
+import numpy as np
+import matplotlib.pyplot as plt
+from keras import models
+import math
+
+#数据处理
+Temperature_origin = np.array([28.58,30.00,32.65,35.04,37.55,39.50,42.82,45.00,47.50,50.00])
+pro_tep = []
+for tep in Temperature_origin:
+    tep_ = 1./(tep+273.15)
+    pro_tep.append(tep_)
+x_tep = pro_tep[:]
+pro_tep = np.array(pro_tep)
+x_mean = pro_tep.mean(axis=0)
+pro_tep -= x_mean
+x_std = pro_tep.std(axis=0)
+pro_tep /= x_std
+print(pro_tep)
+
+Risistance_origin = np.array([8934.0,8631.0,7986.0,7379.0,6845.0,6410.0,5713.0,5347.0,4972.0,4570.0])
+pro_ris = []
+for ris in Risistance_origin:
+    ris_ = math.log(ris,math.e)
+    pro_ris.append(ris_)
+x_ris = pro_ris[:]
+pro_ris = np.array(pro_ris)
+y_mean = pro_ris.mean(axis=0)
+pro_ris -= y_mean
+y_std = pro_ris.std(axis=0)
+pro_ris /= y_std
+print(pro_ris)
+
+#构建模型
+model = models.Sequential()
+model.add(layers.Dense(1,input_dim=1))
+plt.scatter(pro_tep,pro_ris)
+
+model.compile(optimizer='adam',loss='mse')
+
+model.fit(pro_tep,pro_ris,epochs=500)
+
+y_pred = model.predict(pro_tep)
+print(y_pred)
+plt.scatter(pro_tep,pro_ris)
+
+plt.plot(pro_tep,y_pred,'r-',lw=3)
+plt.show()
+
+#后处理数据
+w,b = model.layers[0].get_weights()
+r_w = w*(y_std/x_std)
+r_b = -w*(x_mean*y_std)/x_std + b*y_std + y_mean
+
+print(r_w,r_b)
