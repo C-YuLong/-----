@@ -54,3 +54,25 @@ r_w = w*(y_std/x_std)
 r_b = -w*(x_mean*y_std)/x_std + b*y_std + y_mean
 
 print(r_w,r_b)
+
+print(r_w,r_b)
+print(x_tep)
+r_y_pred = []
+for temp in x_tep:
+    pred_temp = r_w * temp + r_b
+    r_y_pred.append(pred_temp)
+r_y_pred = np.array(r_y_pred)
+r_y_pred = r_y_pred.reshape((10,))
+print(r_y_pred)
+plt.scatter(x_tep,x_ris, label='sample')
+plt.title('Risistence Vary with temperature')
+plt.xlabel('1/T')
+plt.ylabel('R')
+plt.plot(x_tep,r_y_pred,'r-',label='predictoin')
+plt.text(0.028, 8.6, "function: y = x * x", size = 10,\
+         family = "fantasy", color = "r", style = "italic", weight = "light",\
+         bbox = dict(facecolor = "r", alpha = 0.2))
+
+
+plt.legend()
+plt.show()
